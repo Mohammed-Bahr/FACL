@@ -1,77 +1,167 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Learning]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>Learning</title><link></link></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Mon, 09 Nov 2026 00:27:38 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Mon, 09 Nov 2026 00:27:33 GMT</pubDate><ttl>60</ttl><dc:creator></dc:creator><item><title><![CDATA[04.kinematics]]></title><description><![CDATA[We are not animals. We are not a product of what has happened to us in our past. We have the power of choice.
-Stephen Covey
-"اللهم إني أسألك فهم النبيين، وحفظ المرسلين، والملائكة المقربين، اللهم اجعل ألسنتنا عامرة بذكرك، وقلوبنا بخشيتك، إنك على كل شيء قدير" Kinematics = the geometry of motion, ignoring what causes it like power or torque It ignores forces, torques, and accelerations. Only position and velocity exist in this world.
-Anything about "will the battery handle this?", "how much torque does the motor need?", or energy belongs to dynamics, a different course topic.
-افترض إن عندك ذراع روبوت طوله مترين.
-في الـ Kinematics، تقدر تحسب مكان إيده لما تغيّر زوايا المفاصل، حتى لو مش عارف نوع الموتور المستخدم.
-لكن في الـ Dynamics، لما تطلب منه يشيل حمولة وزنها (5,kg)، محتاج تدرس العزوم والكتل والقصور الذاتي عشان تعرف هل الموتور يقدر ينفذ الحركة المطلوبة.
-It splits into two parts:
-Position kinematics: It relates joint angles and positions to the location and orientation of the robot's end effector. This is the core part we will be working on today.(This lecture)
-Differential (velocity) kinematics: This examines the relationship between joint velocities and the velocity of the robot's end-effector, often utilizing the Jacobian. This is an extension of the current lecture the detailed derivation is not covered here. (Next lecture)
-<img height="596" alt="Robotics # Kinematic Chains. Welcome to this comprehensive guide on… |by Dilip Kumar | Medium" src="https://images.openai.com/static-rsc-4/tsGa-CYKgPRvfZOJyK_NSx_SqLvMiO1IaqaHHrAjBSKVRu-U3lpBg00PokYNrjMLTtAh8rrxonDkFvLdfQMy1JVjH_6amqY8dkZbtnEq575Sy61xzCbvB6eHpIISK-KmWeTVy1pfxrHKQZjS1xCEHp98OR_bjLko3yRRHA5dc4A?purpose=inline" referrerpolicy="no-referrer" data-image-scale-processed="true" data-image-filename="tsGa-CYKgPRvfZOJyK_NSx_SqLvMiO1IaqaHHrAjBSKVRu-U3lpBg00PokYNrjMLTtAh8rrxonDkFvLdfQMy1JVjH_6amqY8dkZbtnEq575Sy61xzCbvB6eHpIISK-KmWeTVy1pfxrHKQZjS1xCEHp98OR_bjLko3yRRHA5dc4A" class="image-scale-clickable is-unresolved" title="Click to resize" target="_self" style="width: 596px; max-width: 100%;">
-Why ignore forces? A robot arm is a chain of rigid links. Where its hand ends up depends only on the shape of the chain (link lengths and joint angles), not on how hard the motors pushed. So geometry alone answers "where is the hand?".
-Forward and inverse kinematics: ~={blue}Forward kinematics=~ (~={green}FK=~): "I know the joint angles. Where is the hand or end factor?" Maps ~={blue}Inverse kinematics=~ (~={green}IK=~): "I want the hand there. What joint angles do I need?" Maps: Why both matter in a real robot: the motors are commanded in joint space (~={brown}you send them angles=~), but you think and plan in task space ("~={brown}grab the cup at this position=~").
-~={green}IK converts your goal into motor commands=~. ~={yellow}FK converts motor readings back into "where is my hand now?",=~ which is needed for feedback. This is why the lecture opened with PID control the controller drives each joint, and kinematics tells it which joint values to aim for.<br><img alt="机器人动力学与控制学习笔记（二）————机器人动力学建模-CSDN博客" src="https://images.openai.com/static-rsc-4/ViLItvzdd_mRPLjK100LeL6r-mwLOdPJ0xycIq5b0vT6Zysr2vD_6Js57HxIK5P0nhjrziSQIRQoeULO9PjFEOulayVz0TtJ42NMYhdd6p5VRCxSPnBFLV_r9V4BZnoBllmRc_u6eT6iQQoBGRGiprJ0smFEyejHffLWXWWIbsM?purpose=inline" referrerpolicy="no-referrer" data-image-scale-processed="true" data-image-filename="ViLItvzdd_mRPLjK100LeL6r-mwLOdPJ0xycIq5b0vT6Zysr2vD_6Js57HxIK5P0nhjrziSQIRQoeULO9PjFEOulayVz0TtJ42NMYhdd6p5VRCxSPnBFLV_r9V4BZnoBllmRc_u6eT6iQQoBGRGiprJ0smFEyejHffLWXWWIbsM" class="image-scale-clickable is-unresolved" title="Click to resize" target="_self">Take a planar arm with rotating joints. Knowing as and fully determines the arm's shape: is the Configuration Vector its contains joint position vector, with entries (one per joint). is angle measured from the ground/x-axis to link 1. is angle measured from the extension of Previous link, which is link 1 to link 2. It is a relative angle, not measured from the ground.
-And do the same if the robot have يعني إيه Configuration Vector ؟
-إحنا محتاجين طريقة رياضية نمثل بيها حالة الروبوت. بما إن الروبوت عنده مفصلين، ومكان كل مفصل بيتحدد بزاوية، يبقى حالة الروبوت هنا تتحدد بزاويتين:
-ده اسمه Configuration Vector أو متجه تكوين الروبوت. الرمز بيمثل مجموعة القيم اللي بتحدد وضع المفاصل.
-مثلًا:
-معناه إن المفصل الأول عند ، والمفصل التاني عند ، وفقًا لتعريف الزوايا اللي اتفقنا عليه.
-لو الروبوت فيه ثلاثة مفاصل متحركة، فممكن يكون:
-ولو بعض المفاصل انزلاقية بدل دورانية، ممكن نستخدم إزاحات خطية بدل الزوايا.
-إذن، الـ Configuration بيتحدد بمتغيرات المفاصل، مش بمجرد مكان إيد الروبوت.وده فرق جوهري هنحتاجه بعد شوية.
-Position Matrix: describes the end effector (the tool or hand) and has entries.
-In 3D, a rigid body has at most 6 DOF: 3 translations and 3 rotations . So . In 2D, at most 3: plus one rotation . So . The lecture gave useful examples of choosing based on the task: A car on a road: at most (position and heading).
-A train on a rail: (distance along the track).
-A ball you want to move: in 2D, because a ball has no "front", so orientation is irrelevant. You only track . You choose to contain only what the task cares about.<br><img height="310" alt="" src="https://www.alanzucconi.com/wp-content/uploads/2020/04/ik3d_xy.gif" referrerpolicy="no-referrer" data-image-scale-processed="true" data-image-filename="ik3d_xy.gif" class="image-scale-clickable is-unresolved" title="Click to resize" target="_self" style="width: 502px; max-width: 100%;">
-Configuration space = all possible values of in the space.<br>
-<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8-eLjJQuKBYvOfkt8YHtPw2dMRPodeoKbydxCoYLDVEy8rV37RLbRhtk&amp;s=10" referrerpolicy="no-referrer" data-image-scale-processed="true" data-image-filename="images" class="image-scale-clickable is-unresolved" title="Click to resize" target="_self">
-Task space = all possible values of in the space.
-Concrete picture from the lecture: if , the configuration space is a square, and one point in the square is one pose of the robot. (Strictly, since and are the same angle, it wraps around like a donut, a torus. A square is a fine first picture.)Forward Kinematics () calculates end-effector pose from known joint angles (), Inverse Kinematics solves the reverse mapping ().
-It simply means how to calculate Task Vector from the Configuration Vector i have.<br><img height="259" alt="Robot Manipulation Control with Inverse and Forward Kinematics - Technical Articles" src="https://images.openai.com/static-rsc-4/ayfBiAWcc9BEpkzaCpyQHcWVE4-LnaF8S99BGes8IzA1pn1MKfZoIErJUzqBDuZsn7B1DyohAQuIbQ8I5isT4SpHQ2-x3ESKo5mXfROZEwH84ZmlttGGKhnYv8ZMNPbS7xCxarx4SmvuSl05Qm9VHURRW0_AXtTiO4-bgsItaVM?purpose=inline" referrerpolicy="no-referrer" data-image-scale-processed="true" data-image-filename="ayfBiAWcc9BEpkzaCpyQHcWVE4-LnaF8S99BGes8IzA1pn1MKfZoIErJUzqBDuZsn7B1DyohAQuIbQ8I5isT4SpHQ2-x3ESKo5mXfROZEwH84ZmlttGGKhnYv8ZMNPbS7xCxarx4SmvuSl05Qm9VHURRW0_AXtTiO4-bgsItaVM" class="image-scale-clickable is-unresolved" title="Click to resize" target="_self" style="width: 341px; max-width: 100%;">Consider two links of lengths and , connected by revolute joints. Let: be the absolute angle of link 1 from the -axis. be the relative angle of link 2 with respect to link 1.
-From Right triangle with hypotenuse : Horizontal projection . Vertical Projection . Calculate the end of the first link: تخيّل إنك أسقطت نهاية الجزء الأول على المحورين و.
-من المثلث القائم: إذن:وبنفس الطريقة:إذن:كده عرفنا مكان المفصل التاني، لأنه موجود عند نهاية الجزء الأول.
-لاحظ إن الـ Cosine بيجيب الإسقاط الأفقي، والـ Sine بيجيب الإسقاط الرأسي، لأن الزاوية مقاسة من المحور الأفقي. Calculate the end of the second Link: الجزء الثاني طوله ، واتجاهه بالنسبة للمحور الأفقي هو: إذن الإسقاط الأفقي للجزء الثاني: والإسقاط الرأسي: خد بالك إننا استخدمنا مجموع الزاويتين، مش لوحدها؛ لأن زاوية نسبية بين الوصلتين. Then the End Effector Coordinates is نهاية الذراع موجودة بعد ما نمشي الجزء الأول، وبعده الجزء التاني.
-وبالتالي الموقع النهائي بيساوي مجموع الإسقاطات:نعوّض: وبالنسبة للمحور الرأسي: إذن:دي أول معادلتين أساسيتين في المحاضرة.
-وآخر حاجة، اتجاه الجزء الأخير هو: So Forward Kinematics Equations is: (for 2D as now)Key property: FK always gives exactly one answer. Plug in angles, get a position. It is just evaluating a formula, which is why the lecturer called it easy.Inverse Kinematics () is a core problem in robotics that deals with finding the joint variables (angles for rotation joints, extensions for prismatic joints) required to place a robot's end effector at a desired position and orientation in task space.
-What is the end of the robot domain before even start just by math: Let’s think about this geometrically. We have two links with lengths and . The maximum possible distance between the robot's base and the end of the arm occurs when both links are aligned in a straight line, pointing in the same direction: The minimum distance, on the other hand, occurs when the two links are directed toward each other in this case, the distance between the end of the arm and the base is the absolute difference between the two lengths: Therefore, in an ideal model assuming no additional constraints on the joints—the condition for reaching a point with coordinates is:
-This is because the straight-line distance between the arm's base and the target is:
-Of course, if there are mechanical limits on the joint angles or obstacles in the workspace, a point might fall within these geometric bounds yet still be practically unreachable.
-An important point to note: in this lecture, the basic Inverse Kinematics problem deals only with and coordinates the orientation of the gripper is not necessarily specified. This is allowed because of the possibilities of multiple solutions for the same target position.
-The Law of Cosines states that for any triangle with sides and , where is the angle between sides and :Where does this law come from? (full derivation) click to unfold
-Setup: place the vertex with angle (the angle between sides and ) at the origin. Lay side flat along the x-axis: its far end is the point . Side rises from the origin at angle : its far end is the point .
-Step 1: side is just the straight-line distance between and , so apply the distance formula: Step 2: expand both squares: Step 3: factor out and use the identity : Conclusion: Note what happened: the term appeared the moment we squared . And since and are the projections of side onto side , geometrically we dropped an altitude of height and applied Pythagoras on the two right triangles it creates the Law of Cosines is really "Pythagoras with a correction term" for triangles that aren't right-angled.
-Sanity check: if , then and the law collapses to Pythagoras itself. ✓<br>In our triangle, the interior angle between and the line is supplementary to the joint angle (i.e., they add up to ). If we denote the interior angle as :<img height="259" alt="Robot Manipulation Control with Inverse and Forward Kinematics - Technical Articles" src="https://images.openai.com/static-rsc-4/ayfBiAWcc9BEpkzaCpyQHcWVE4-LnaF8S99BGes8IzA1pn1MKfZoIErJUzqBDuZsn7B1DyohAQuIbQ8I5isT4SpHQ2-x3ESKo5mXfROZEwH84ZmlttGGKhnYv8ZMNPbS7xCxarx4SmvuSl05Qm9VHURRW0_AXtTiO4-bgsItaVM?purpose=inline" referrerpolicy="no-referrer" data-image-scale-processed="true" data-image-filename="ayfBiAWcc9BEpkzaCpyQHcWVE4-LnaF8S99BGes8IzA1pn1MKfZoIErJUzqBDuZsn7B1DyohAQuIbQ8I5isT4SpHQ2-x3ESKo5mXfROZEwH84ZmlttGGKhnYv8ZMNPbS7xCxarx4SmvuSl05Qm9VHURRW0_AXtTiO4-bgsItaVM" class="image-scale-clickable is-unresolved" title="Click to resize" target="_self" style="width: 341px; max-width: 100%;">Substituting:Let be the interior angle at the elbow مِرفَق (opposite side ):
-But is measured from link 1's extension, so it's the exterior angle. They are supplementary: . HenceStep 1 in (full detail)
-0. Draw the triangle: base at origin , elbow at , target at . The three sides are: (link 1) (link 2) (straight line from base to target) The interior angle at the elbow is , and it faces side (it is opposite to ).
-1. Express from the target: the distance from the base to the target is 2. Apply the Law of Cosines: in the triangle, side is opposite the angle (the angle between sides and ), so: 3. Solve for : move to the left and to the right, then divide by : 4. Substitute : replace with what we know from the target coordinates: 5. Convert : is not the interior angle it is measured from link 1's extension (continuation straight past the elbow). So is the exterior angle at the elbow. Interior + exterior always sum to a straight line:
-Using , the same result can be written without the as: 6. Domain check (reachability): only accepts values in . The argument being outside that range means no triangle can be formed the target is outside the reachable ring .
-Sanity checks:
-: , so . That is exactly Pythagoras. ✓
-: arm fully stretched, so and . ✓ is the angle of link 1 above the x-axis. The target direction has angle . Link 1 sits below that line by an angle (the triangle's interior angle at the origin), so:
-( comes from the law of cosines again, now for the side opposite it.) Combined:	Step 2 in (full detail)
-0. What we know: the same triangle –– with sides , , . We already have from Step 1; now we need the whole arm's tilt.
-1. Identify : is the interior angle at the origin the angle between link 1 (side ) and the line to the target (side ). It faces side , i.e. is the side opposite .
-2. Apply the Law of Cosines this time for side : the law is symmetric; here the side opposite the angle is , and the two sides touching are and : 3. Solve for : same algebra as before (move, then divide): 4. Substitute : is not a "given", it comes from the target: 5. Get the target's direction: the straight line from base to target makes an angle with the x-axis of 6. Assemble : look at the geometry link 1 does not point at the target. It points below that line, because the elbow bends back down (or the target line is above). The triangle at tells us link 1 sits at angle below the target line, so we subtract: 7. Combine 4 + 5 + 6: Quadrant warning: only reads the ratio and give the same answer. In code always use atan2(y, x).مثال نطبّق الـ Forward Kinematics
-افترض إن عندك القيم دي: المطلوب: احسب .
-أولًا: نحسب اتجاه الجزء الثاني. ثانيًا: نحسب . وإحنا عارفين إن: إذن: ثالثًا: نحسب . وبما إن: يبقى: وأخيرًا: إذن وضع نهاية الروبوت هو: يعني لو حرّكنا المفصلين للقيم دي، فإيد الروبوت هتبقى عند ، و، واتجاهها رأسي لأعلى.
-وده معنى الـ Forward Kinematics بصورة عملية.
-مثال كامل على الـ Inverse Kinematics
-تعالَ نحل مثالًا بالأرقام ونراجع الناتج بالـ Forward Kinematics.
-عندنا ذراع بطول: والهدف موجود عند: المطلوب: نوجد . نعوّض:إذن:ومن ثم:طلع عندنا حلان، وده طبيعي هندسيًا. إذن:
-وبالتالي الحل الأول: نستخدم الفرع الآخر:
-ومن صيغة الـ Inverse Kinematics العامة، أو من الهندسة، هنحصل على:
-إذن عندنا وضعان مختلفان للمفاصل، لكن نفس نقطة النهاية. حرّك المؤشر لاختيار إحدى الوضعيتين. الرسم توضيحي لذراع بطول متر لكل وصلة.
-الحل الأول
-الحل الثاني
-في الحلّين، نقطة النهاية واحدة ، لكن شكل الذراع واتجاه الجزء الأخير مختلفان. عندنا:نحسب:
-إذن وصلنا فعلًا إلى الهدف:
-وبالنسبة للحل الثاني:
-يبقى الاتجاه المطلق للوصلة الثانية:
-وبالتالي:
-نفس النتيجة.
-الدرس هنا: الـ Forward Kinematics بتديك مكان النهاية من وضع المفاصل، لكن معرفة مكان النهاية وحده مش بالضرورة تكفي لتحديد وضع المفاصل بشكل وحيد.
-والمعادلات الأساسية اللي محتاج تبقى فاهمها كويس هي:
-Forward Kinematics:
-Inverse Kinematics:
-لاحظ إن المعادلة الأخيرة بتعتمد على قيمة اللي اخترتها، وبالتالي هتديك زاوية المفصل الأول الموافقة لنفس فرع الحل.]]></description><link>04.kinematics.html</link><guid isPermaLink="false">FACL/4TH-Year-Term-1/Robotics/LEC5/04.kinematics.md</guid><pubDate>Sun, 08 Nov 2026 01:55:41 GMT</pubDate><enclosure url="https://images.openai.com/static-rsc-4/tsGa-CYKgPRvfZOJyK_NSx_SqLvMiO1IaqaHHrAjBSKVRu-U3lpBg00PokYNrjMLTtAh8rrxonDkFvLdfQMy1JVjH_6amqY8dkZbtnEq575Sy61xzCbvB6eHpIISK-KmWeTVy1pfxrHKQZjS1xCEHp98OR_bjLko3yRRHA5dc4A?purpose=inline" length="0" type="false"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;https://images.openai.com/static-rsc-4/tsGa-CYKgPRvfZOJyK_NSx_SqLvMiO1IaqaHHrAjBSKVRu-U3lpBg00PokYNrjMLTtAh8rrxonDkFvLdfQMy1JVjH_6amqY8dkZbtnEq575Sy61xzCbvB6eHpIISK-KmWeTVy1pfxrHKQZjS1xCEHp98OR_bjLko3yRRHA5dc4A?purpose=inline&quot;&gt;&lt;/figure&gt;</content:encoded></item></channel></rss>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Learning]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>Learning</title><link></link></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Thu, 12 Nov 2026 08:18:23 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Thu, 12 Nov 2026 08:18:19 GMT</pubDate><ttl>60</ttl><dc:creator></dc:creator><item><title><![CDATA[Recap]]></title><description><![CDATA[Be less curious about people and more curious about ideas.
+Marie Curie
+اللَّهُمَّ إِنِّي أَسْأَلُكَ فَهْمَ النَّبِيِّينَ، وَحِفْظَ المُرْسَلِينَ، وَالمَلَائِكَةِ المُقَرَّبِينَ، اللَّهُمَّ اجْعَلْ أَلْسِنَتَنَا عَامِرَةً بِذِكْرِكَ، وَقُلُوبَنَا بِخَشْيَتِكَ، إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.
+Did you know that to a digital computer, Leonardo da Vinci's Mona Lisa is nothing more than a giant grid of cold, disconnected numbers ranging from 0 to 255?
+So Question is How do we bridge the gap between raw integer matrices and high-level visual understanding, teaching an algorithm to brighten obscure shadows, filter out destructive sensor noise, pinpoint crisp architectural corners, or even reconstruct photos distorted by motion blur? Digital Image Processing (): the foundational discipline that transforms raw pixel data into visual insights. In this comprehensive masterclass, we will explore the algorithms, spatial transformations, frequency domain operations, and feature extraction pipelines that power modern computer vision systems.What will be Recaping from this part of course is:
+Differentiate between low-level image processing operations and high-level computer vision pipelines.
+Apply spatial domain transformations, including gamma corrections, contrast stretching, and discrete histogram equalization.
+Design spatial filters for image smoothing, sharpening, and adaptive local noise reduction.
+Analyze images in the frequency domain using 2D Discrete Fourier Transforms, lowpass/highpass filters, and homomorphic filtering.
+Construct local feature descriptors and interest point detectors using HOG, Harris Corner Detection, and the SIFT pipeline.
+Evaluate image restoration models to reverse blur and noise using inverse filtering and Wiener filters.
+Main Idea : A digital image is a 2D matrix of numbers. Digital Image Processing (DIP) means manipulating this matrix algorithmically to enhance, analyse, or extract information from images. Understanding the coordinate system and value range is prerequisite for every later topic.Key Definitions = row (top bottom), = column (left right).
+Origin is the top-left corner. = number of intensity levels (e.g., for -bit images). Low-level: Input &amp; output are images (enhancement, filtering, restoration).
+Mid-level: Input is an image, output is attributes (segmentation, feature extraction).
+High-level: Making sense of recognised objects (analysis, understanding).
+So The master equation governing spatial enhancement is expressed as where is the input pixel, is the output pixel, and is an operator defined over a spatial neighborhood surrounding . When the neighborhood is restricted to a single pixel , the operation simplifies to a point operation, governed by an intensity mapping transformation . Main Idea: Point processing maps each pixel independently: , where is the input intensity and is the output. No spatial neighbours are involved.
+The transformation reshapes the histogram and can brighten, darken, invert, or compress dynamic range. Image Negative: This flips dark and light pixels, inverting brightness. It is especially effective for revealing details in dark medical X-rays or dark-field microscopy photos. Log Transform: The logarithmic curve rises steeply for low input values and flattens out for high input values. = scaling constant (often to map to full range).
+This expands dark pixel values over a wider output dynamic range while compressing extremely bright values.
+It is ideal for displaying Fourier magnitude spectra whose values span several orders of magnitude.
+Log transform requires (not ) to avoid . Power-Law (Gamma) Transform = scaling constant, = gamma.
+: brightens image (expands darks).
+: darkens image (expands brights).
+: identity (if ).
+CRT monitors naturally apply gamma ≈ 2.2 gamma correction uses . Piecewise-Linear Transforms : Uses customizable control points and to create linear segments that stretch specific mid-range intensity values while compressing others. Contrast Stretching: Maps linearly to .
+Intensity-Level Slicing: Highlight a band of intensities and set the rest to a background value (binary) or leave unchanged (preserve background). Beyond basic mapping curves, Histogram Methods utilize the probability distribution of pixel intensities across the image.
+Key Definitions:An Image Histogram plots the number of pixels occurring at each gray level . The normalized histogram, representing the Probability Density Function (PDF), is , where is the total pixel count. A histogram concentrated to the left indicates a dark image
+one concentrated to the right indicates a bright image a narrow histogram signifies low contrast and a widely spread histogram signifies high contrast.
+Contrast Stretching (Min-Max Normalization): linearly maps the image's existing minimum and maximum intensity values across the full available range via: Contrast stretching scales the existing histogram shape without altering its distribution profile. However: it is sensitive to isolated outlier noise pixels.
+Histogram Equalization automatically reshapes the histogram profile to achieve an approximately uniform distribution, maximizing dynamic range and contrast.
+It uses the image's own Cumulative Distribution Function () as the intensity transformation curve: Histogram Equalisation Step by Step: Compute histogram for .
+Normalise: .
+Cumulative Distribution Function: Map to output levels: Replace each pixel with intensity by . The result is an image whose histogram is approximately uniform maximum contrast.
+Why it works: The transformation is the continuous form. Since the CDF is monotonically increasing, distinct input levels map to distinct (or nearly distinct) output levels, spreading the histogram. Example
+If 80% of pixels are in , the CDF is nearly flat outside this range and steep inside it. Equalisation stretches across most of and compresses the rest.
+Fail Histogram equalisation does not guarantee a perfectly flat histogram on discrete images only approximately uniform.
+The mapping is deterministic and non-reversible in general (multiple input levels can map to the same output level).
+Don't confuse contrast stretching (linear, two parameters) with histogram equalisation (non-linear, automatic). Spatial filtering slides a small window (kernel/mask) over the image and computes a function of the neighbourhood at each pixel. Smoothing filters reduce noise by averaging nearby pixels at the cost of blurring edges.Spatial Correlation/Convolution:
+Correlation (filter as given): Convolution (filter rotated 180°): For symmetric kernels, correlation = convolution. = kernel of size .
+Boundary handling: zero-padding, replicate, mirror, or ignore border pixels.
+Common Noise Types (motivation for smoothing):
+Salt-and-pepper noise: a random subset of pixels is set to the extreme values (0 = pepper, 255 = salt). The image has isolated black and white dots.
+Gaussian noise: every pixel gets a small random offset, with . The image looks "grainy مبلور" everywhere.
+Uniform (Box) Average kernel, all entries :
+Weighted Average centre pixel has higher weight (e.g., ):
+This is a discrete approximation to a Gaussian less blurring than the box filter.Sort the pixel values in the neighbourhood, then pick one:Adjusts behaviour per pixel based on local statistics vs. global noise:Behaviour:
+If no noise (no change).
+If edge/detail region ratio ≈ 0 (preserve detail).
+If flat region dominated by noise ratio ≈ 1 (replace with local mean).
+Clamp the ratio: if , set ratio = 1.
+Fail Median filter is non-linear cannot be expressed as convolution.
+Box filter blurs edges weighted average is better but still blurs.
+Adaptive filter needs an estimate of noise variance if this is wrong, performance degrades.
+Increasing kernel size more smoothing but more blurring and higher computation. Sharpening emphasises intensity changes (edges, fine detail) using derivatives. The 1st derivative (gradient) detects edges the 2nd derivative (Laplacian) enhances them. Both are implemented via discrete convolution kernels.The image gradient at :
+Gradient magnitude (edge strength):
+Gradient direction (edge orientation):
+Source note typo
+The LEC3 source material writes this is a typo. The correct formula is .
+Sobel kernels (): detects vertical edges (intensity change in horizontal direction), detects horizontal edges.Common Laplacian Kernels (Masks): To apply the Laplacian filter over an image using spatial convolution, kernels are commonly used:
+4-Neighbor Mask (Standard orthogonal neighbors): 8-Neighbor Mask (Includes diagonal neighbors): Diagonal-Emphasized Mask: Sharpening with the Laplacian:To sharpen, add (or subtract, depending on the kernel sign convention) the Laplacian to the original image:
+The rule: subtract when centre is negative, add when positive this always enhances edges.
+Key Property: The sum of all coefficients in any Laplacian kernel is always zero (). Because of this, uniform or flat intensity regions yield an output response of , ensuring that only edges and sharp transitions appear in the filtered result. Fail Laplacian is rotation-invariant (scalar) detects edges regardless of direction but doesn't give orientation.
+Sobel gives both magnitude and direction richer information.
+Laplacian is very sensitive to noise (2nd derivative amplifies noise more than 1st). Often smooth first, then sharpen.
+Don't confuse the two sign conventions for the Laplacian kernel just match the add/subtract rule. The Fourier Transform decomposes an image into sinusoidal components at different frequencies. Low frequencies = smooth areas high frequencies = edges/noise. Filtering in the frequency domain is equivalent to convolution in the spatial domain (Convolution Theorem), but can be conceptually simpler and sometimes faster (via FFT).Euler's Formula .
+1D Discrete Fourier Transform (DFT): Forward: Inverse: 2D Discrete Fourier Transform: Forward: Inverse: Key Properties: ⭐ Convolution Theorem: Convolution in spatial domain = multiplication in frequency domain.
+This is why frequency domain filtering works. Frequency Domain Filtering Pipeline Compute the DFT of the image.
+Multiply by a filter function (a same-sized array of values, usually real, between 0 and 1).
+Compute the inverse DFT of to get the enhanced image . ⚠️ Watch-outs The DFT assumes the image is periodic may cause artefacts at borders (solution: zero-pad). shift is essential before visualising the spectrum (otherwise DC is in corners).
+Phase carries more structural information than magnitude swapping phases between two images makes the result look like the phase-donor. Once in the frequency domain, we filter by designing a transfer function that selectively multiplies frequency components: . Low-pass filters (LPF): attenuate high-frequency components while leaving low frequencies unaltered produce smoothing and blurring.
+High-pass filters (HPF): attenuate low-frequency components while passing high frequencies produce sharpening and edge enhancement.
+The radial Euclidean distance from any frequency coordinate to the spectrum centre is:
+where is the non-negative cutoff frequency.High-pass filters are obtained directly from low-pass filters via the frequency complement:
+High-Frequency Emphasis Filtering
+Because pure highpass filtering completely eliminates the DC frequency component (), the resulting spatial image loses its average background gray-level and looks predominantly dark.
+To retain the image's tonal luminance while simultaneously boosting fine details and edges, we apply High-Frequency Emphasis: Used extensively to isolate or completely eliminate periodic / sinusoidal noise that appears as concentrated energy spikes (stars) in the frequency spectrum:
+Band-Reject (Notch) Filter: blocks a circular band of radial width centered at radius : Band-Pass Filter: retains only the selected frequency ring while removing all others: Fail Ideal LPF has the sharpest cutoff but suffers from the worst ringing artifacts. Gaussian has zero ringing but broader spatial spread.
+Butterworth at order 1 has no ringing; as order increases (), ringing progressively appears.
+At cutoff : BLPF equals 0.5, whereas GLPF equals 0.607 (). Do not mix up their cutoff definitions.
+HPF zeroes out the DC term the output image will appear excessively dark unless DC is offset or high-frequency emphasis is applied. Main Idea: An image is physically formed as the product of two distinct components: the ambient illumination incident upon the scene, and the reflectance property of the scene objects: Illumination : determined by the lighting source; varies slowly across the scene concentrated at low frequencies.
+Reflectance : determined by object geometry, surface textures, and boundaries; varies rapidly concentrated at high frequencies.
+The Dilemma: Linear filtering cannot operate directly on products because the Fourier transform of a product is a complex 2D convolution: .To decouple them, Homomorphic Filtering applies a logarithmic transformation that converts the multiplicative relationship into an additive one, enabling independent frequency control!The pipeline:Step-by-Step Homomorphic Filtering Derivation: Natural Logarithm Transformation:
+Multiplication is successfully transformed into simple addition!
+2D Discrete Fourier Transform:
+where occupies low frequencies and occupies high frequencies.
+Frequency Domain Filtering: Inverse 2D DFT: Exponential Inversion: To compress the illumination dynamic range while amplifying high-frequency reflectance details, the transfer function must satisfy and :
+As : attenuates low frequencies (compresses uneven illumination).
+As : amplifies high frequencies (sharpens texture and contrast).
+: parameter controlling the steepness of the transition slope between and .
+Fail Requires . If an image contains zero-valued pixels, compute with a tiny positive constant to prevent numerical errors.
+Always enforce and . Swapping them will attenuate details and amplify illumination inconsistencies.
+Homomorphic filtering assumes an ideal multiplicative model without additive sensor noise. Main Idea: The HOG descriptor captures local object appearance and silhouette shapes by characterizing the spatial distribution of local intensity gradient orientations. By accumulating gradient histograms over localized dense grids (cells) and normalizing their energy across overlapping blocks, HOG achieves exceptional invariance to subtle geometric deformations and photometric illumination changes. The HOG Pipline:Compute 1D horizontal and vertical derivative approximations using standard 1D Sobel kernels and : Gradient Magnitude: Gradient Orientation: Standard HOG employs unsigned orientations mapped to (e.g., ). The image window is partitioned into non-overlapping spatial cells of pixels.
+In each cell, an orientation histogram with 9 discrete bins is constructed (each bin spans : ).
+Each pixel votes into the histogram: its vote weight is equal to its gradient magnitude , bilinearly interpolated across neighboring angular bin centers to prevent boundary quantization artifacts.
+To counteract variations in illumination, shadows, and contrast, cells are grouped into overlapping blocks of cells ( pixels):
+Each block contains cells bins = 36 values.
+The 36-D block vector is normalized using standard -norm: Blocks slide across the window with a stride of 1 cell (8 pixels), producing spatial overlap that ensures every inner cell participates in multiple differently-normalized blocks. Feature Vector Dimensionality for a Standard Window:
+Detection window size: pixels
+Cell size: pixels cells horizontally, cells vertically
+Block size: cells ( pixels), Block stride = 1 cell (8 pixels)
+Number of horizontal blocks: Number of vertical blocks: Total blocks per window: Values per block: Total Feature Vector Length: The flattened 3780-dimensional feature vector is fed to a pre-trained Linear Support Vector Machine (SVM) to classify whether the detection window contains the target object (e.g., pedestrian vs. background).Fail HOG orientation is unsigned () by default; arrows pointing in opposite directions ( and ) cast votes into the identical bin.
+Omitting block normalization severely degrades classification accuracy under varying lighting.
+The 3780-dimensional length is specific to the detection window with cells and blocks. Main Idea: An image point can be categorized based on how its local intensity changes when a small window is shifted in arbitrary directions:
+Flat region: no intensity change in any shift direction.
+Edge: large intensity change perpendicular to the edge; zero change along the edge direction.
+Corner: significant intensity change in all directions!
+<img alt="331" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlKoDrHCdtWbf1RvvK2OSvkP9KIwThqRXVj_96xxoouw&amp;s=10" referrerpolicy="no-referrer" data-image-scale-processed="true" data-image-filename="images" class="image-scale-clickable is-unresolved" title="Click to resize" target="_self" style="width: 331px; max-width: 100%;">
+When a spatial window centered at is shifted by an offset , the change in intensity is quantified by the weighted SSD:
+where is either a uniform rectangular window or a smooth circular Gaussian window .For infinitesimally small shifts , expand via 2D Taylor series:
+where and are spatial image derivatives (obtained via Sobel filters).Substituting this back into the SSD formulation yields a compact quadratic form:
+The matrix is symmetric and positive semi-definite. Its two real eigenvalues quantify the principal curvatures of :Calculating eigenvalues explicitly for every single pixel is computationally expensive. Harris and Stephens proposed an elegant scalar response calculated directly from the matrix trace and determinant:The Determinant:
+لو:فالـ Determinant يساوي:وبدلالة الـ Eigenvalues:إذن الـ Determinant بيعتمد على حاصل ضرب مقدار التغيّر في الاتجاهين الأساسيين.
+لو واحد من الـ Eigenvalues صغير جدًا، حاصل الضرب غالبًا هيكون صغيرًا.
+The Trace
+الـ Trace هو مجموع عناصر القطر الرئيسي للـ Matrix: وبدلالة الـ Eigenvalues: إذن معادلة Harris ممكن نكتبها بالشكل ده: دي صيغة مهمة جدًا لفهم ليه الخوارزمية بتفرق بين Corner وEdge وFlat Region.
+where: : empirical sensitivity parameter, typically chosen in the range .<br>
+<img alt="626" src="https://miro.medium.com/v2/resize:fit:1400/1*G9LK1paYcm7SvsUKNt4RHQ.png" referrerpolicy="no-referrer" data-image-scale-processed="true" data-image-filename="1*G9LK1paYcm7SvsUKNt4RHQ.png" class="image-scale-clickable is-unresolved" title="Click to resize" target="_self" style="width: 626px; max-width: 100%;"> (large positive) Corner ( both large). (large negative) Edge ( or ). (near zero) Flat surface.
+Apply Non-Maximum Suppression (NMS) within a local or neighborhood to select isolated, local peak corners.Fail Harris corner detection is rotation-invariant (eigenvalues do not change under coordinate rotation).
+Harris is NOT scale-invariant! An edge viewed at close distance can appear as a corner when zoomed out, and a corner becomes a smooth edge or curve under magnification. Main Idea: SIFT extracts highly distinctive local invariant features that remain robust across changes in scale, in-plane rotation, 3D viewpoint, illumination, and affine distortion. It solves the scale-invariance failure of Harris corners by detecting stable extrema across a continuous scale space. Scale-Space Octaves ──&gt; DoG Space ──&gt; 26-N Extrema ──&gt; Refinement &amp; Filtering ──&gt; Orientation ──&gt; 128-D Descriptor ──&gt; Ratio Match
+The continuous scale space of an image is generated by convolving with a variable-scale Gaussian kernel: Scale space is divided into Octaves. Each octave corresponds to a doubling of scale parameter .
+Between consecutive octaves, the image is downsampled by a factor of 2.
+Within each octave, progressively blurred images are computed at scales: with scale factor .
+To detect scale-invariant blob-like keypoints efficiently, SIFT approximates the computationally demanding scale-normalized Laplacian of Gaussian () by subtracting adjacent blurred images:
+From Gaussian-blurred images per octave, we obtain DoG images.Candidate keypoints are identified by comparing every pixel in the DoG space against its 26 discrete spatio-temporal neighbors:
+8 neighbors in the current DoG scale image.
+9 neighbors in the adjacent DoG scale image immediately above.
+9 neighbors in the adjacent DoG scale image immediately below.
+A point is retained only if it is strictly the local maximum or minimum among all 26 neighbors!Mathematical Sub-Pixel Refinement and Edge Rejection: Sub-Pixel / Sub-Scale Localization:
+Fit a 3D quadratic Taylor polynomial to the local DoG function around candidate :
+Setting yields the continuous offset: Low-Contrast Extrema Rejection:
+Evaluate the value of the DoG function at the sub-pixel peak:
+If , the point is discarded as an unstable, low-contrast noise artifact.
+Elimination of Edge Responses (2D Hessian Test):
+DoG exhibits strong responses along edges even if poorly localized. Compute the spatial Hessian at the keypoint:
+Let be eigenvalues of , with ratio (typically ). Reject if: For every refined keypoint , compute gradient magnitudes and orientations within a Gaussian-weighted neighborhood proportional to its scale .
+Form a 36-bin orientation histogram covering ( per bin).
+The histogram peak corresponds to the dominant canonical orientation .
+Any other local peak reaching of the principal peak spawns an auxiliary keypoint at the same location and scale with the secondary orientation.
+Result: All future descriptor calculations are rotated relative to , guaranteeing complete in-plane rotation invariance! Construct a pixel sampling window centered at the keypoint, oriented along its canonical angle .
+Subdivide the window into a grid of sub-regions (each of size pixels).
+In each sub-region, construct an 8-bin gradient orientation histogram.
+Total feature vector size: .
+Illumination robustness: Normalize the 128-D vector to unit length (-norm) achieves invariance to affine brightness changes ().
+Clamp all feature components greater than down to .
+Re-normalize to unit length eliminates non-linear sensor saturation artifacts. To match descriptors between two images, calculate the Euclidean distance between descriptor vectors. For a given keypoint, let be the distance to the closest neighbor, and be the distance to the second-closest neighbor.Accept the match only if:
+This effectively eliminates false matches arising from repetitive, ambiguous visual patterns.Fail DoG is an approximation of the scale-normalized Laplacian of Gaussian: .
+Candidate extrema require testing against 26 neighbors across 3 scale slices.
+Orientation assignment uses 36 bins ( each), whereas the final descriptor uses 8 bins ( each) across a grid = 128 dimensions.
+Do not confuse the eigenvalue ratio in SIFT edge rejection with the Harris response parameter . Main Idea: Unlike image enhancement (which is heuristic and subjective), Image Restoration is an objective, model-based process aimed at inverting a known or estimated mathematical degradation function and suppressing additive noise.
+Spatial Domain Representation: Frequency Domain Representation: When blur is negligible () and degradation is dominated purely by additive noise, spatial domain filters are used:
+Median Filter: replaces center pixel with the median of sorted neighborhood values superior for salt &amp; pepper noise without blurring edges.
+Max Filter: replaces with eliminates pepper (black) noise.
+Min Filter: replaces with eliminates salt (white) noise.
+Alpha-Trimmed Mean Filter: deletes the lowest and highest pixel values, averaging the remaining pixels optimal for mixed combinations of Gaussian and impulse noise.
+Fail Contraharmonic mean filter cannot handle simultaneous salt and pepper noise; picking destroys pepper but amplifies salt, and vice-versa.
+Geometric mean maps to zero if a single black pixel () is present in the neighborhood window.
+Harmonic mean encounters division by zero on pepper noise pixels. Main Idea: When an image suffers from both optical blur () and additive noise, we operate in the frequency domain to deconvolve the blur while suppressing noise amplification.The simplest deconvolution approach divides the observed degraded spectrum by the degradation transfer function:
+The Noise Catastrophe of the Inverse Filter
+The optical transfer function typical of camera shake, atmospheric turbulence, or out-of-focus blur acts as a low-pass filter, meaning its magnitude decays rapidly toward zero () at high frequencies.
+Consequently, the noise term blows up toward infinity at high frequencies! Even imperceptibly tiny noise completely swamps the reconstructed image signal: The Wiener filter solves the inverse filter disaster by seeking an estimate that minimizes the expected statistical mean square error:
+Assuming the original image and noise are zero-mean, uncorrelated random processes, the closed-form transfer function is:where:
+: complex conjugate of .
+: power spectral magnitude of the degradation function.
+: power spectral density (PSD) of the noise.
+: power spectral density of the uncorrupted image.
+In practical applications where the true image and noise power spectra are unknown, the ratio is approximated by a user-tuned scalar constant :Dynamic Frequency Behavior of the Wiener Filter: When Noise is Zero (): At Frequencies Where Signal-to-Noise Ratio is High (): At Frequencies Where Noise Dominates (): The factor acts as a smart, frequency-dependent attenuator that automatically throttles deconvolution whenever the transfer function approaches zero!Fail The direct inverse filter is unusable in real-world noisy environments without radial frequency truncation.
+The parameter represents the noise-to-signal power ratio: setting too small causes high-frequency noise speckled patterns; setting too large causes severe blurring.
+Wiener restoration assumes stationary noise and linear degradation; it cannot invert non-linear sensor saturation or clipping. ]]></description><link>recap.html</link><guid isPermaLink="false">FACL/4TH-Year-Term-1/DigitalImageProcessing/Recap.md</guid><pubDate>Thu, 12 Nov 2026 08:17:13 GMT</pubDate><enclosure url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlKoDrHCdtWbf1RvvK2OSvkP9KIwThqRXVj_96xxoouw&amp;s=10" length="0" type="false"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlKoDrHCdtWbf1RvvK2OSvkP9KIwThqRXVj_96xxoouw&amp;s=10&quot;&gt;&lt;/figure&gt;</content:encoded></item></channel></rss>
