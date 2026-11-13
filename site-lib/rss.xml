@@ -1,4 +1,4 @@
-<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Learning]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>Learning</title><link/></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Fri, 13 Nov 2026 05:44:31 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Fri, 13 Nov 2026 05:44:25 GMT</pubDate><ttl>60</ttl><dc:creator/><item><title><![CDATA[Recap]]></title><description><![CDATA[Be less curious about people and more curious about ideas.
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Learning]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>Learning</title><link/></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Fri, 13 Nov 2026 06:30:43 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Fri, 13 Nov 2026 06:30:37 GMT</pubDate><ttl>60</ttl><dc:creator/><item><title><![CDATA[Recap]]></title><description><![CDATA[Be less curious about people and more curious about ideas.
 Marie Curie
 اللَّهُمَّ إِنِّي أَسْأَلُكَ فَهْمَ النَّبِيِّينَ، وَحِفْظَ المُرْسَلِينَ، وَالمَلَائِكَةِ المُقَرَّبِينَ، اللَّهُمَّ اجْعَلْ أَلْسِنَتَنَا عَامِرَةً بِذِكْرِكَ، وَقُلُوبَنَا بِخَشْيَتِكَ، إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.
 Did you know that to a digital computer, Leonardo da Vinci's Mona Lisa is nothing more than a giant grid of cold, disconnected numbers ranging from 0 to 255?
@@ -19,14 +19,13 @@ Image Negative: This flips dark and light pixels, inverting brightness. It is es
 This expands dark pixel values over a wider output dynamic range while compressing extremely bright values.
 It is ideal for displaying Fourier magnitude spectra whose values span several orders of magnitude.
 Log transform requires (not ) to avoid . Power-Law (Gamma) Transform = scaling constant, = gamma.
-: brightens image (expands darks).
-: darkens image (expands brights).
+: brightens image (it expands darks).
+: darkens image (it expands brights).
 : identity (if ).
 CRT monitors naturally apply gamma ≈ 2.2 gamma correction uses . Beyond basic mapping curves, Histogram Methods utilize the probability distribution of pixel intensities across the image.
 Key Definitions:An Image Histogram plots the number of pixels occurring at each gray level . The normalized histogram, representing the Probability Density Function (PDF), is , where is the total pixel count. A histogram concentrated to the left indicates a dark image
 one concentrated to the right indicates a bright image a narrow histogram signifies low contrast and a widely spread histogram signifies high contrast.
-Contrast Stretching (Min-Max Normalization): linearly maps the image's existing minimum and maximum intensity values across the full available range via: Contrast stretching scales the existing histogram shape without altering its distribution profile. However: it is sensitive to isolated outlier noise pixels.
-Histogram Equalization automatically reshapes the histogram profile to achieve an approximately uniform distribution, maximizing dynamic range and contrast.
+Contrast Stretching (Min-Max Normalization): linearly maps the image's existing minimum and maximum intensity values across the full available range via: Contrast stretching scales the existing histogram shape without altering its distribution profile. However: it is sensitive to isolated outlier noise pixels. the two points represent the shape if we need slope is : the input minimum maps to the output minimum: the input maximum maps to the output maximum: Histogram Equalization automatically reshapes the histogram profile to achieve an approximately uniform distribution, maximizing dynamic range and contrast.
 It uses the image's own Cumulative Distribution Function () as the intensity transformation curve: Histogram Equalisation Step by Step: Compute histogram for .
 Normalise: .
 Cumulative Distribution Function: Map to output levels: Replace each pixel with intensity by . The result is an image whose histogram is approximately uniform maximum contrast.
@@ -53,8 +52,6 @@ Adaptive filter needs an estimate of noise variance if this is wrong, performanc
 Increasing kernel size more smoothing but more blurring and higher computation. Sharpening emphasises intensity changes (edges, fine detail) using derivatives. The 1st derivative (gradient) detects edges the 2nd derivative (Laplacian) enhances them. Both are implemented via discrete convolution kernels.The image gradient at :
 Gradient magnitude (edge strength):
 Gradient direction (edge orientation):
-Source note typo
-The LEC3 source material writes this is a typo. The correct formula is .
 Sobel kernels (): detects vertical edges (intensity change in horizontal direction), detects horizontal edges.Common Laplacian Kernels (Masks): To apply the Laplacian filter over an image using spatial convolution, kernels are commonly used:
 4-Neighbor Mask (Standard orthogonal neighbors): 8-Neighbor Mask (Includes diagonal neighbors): Diagonal-Emphasized Mask: Sharpening with the Laplacian:To sharpen, add (or subtract, depending on the kernel sign convention) the Laplacian to the original image:
 The rule: subtract when centre is negative, add when positive this always enhances edges.
@@ -82,8 +79,7 @@ The Dilemma: Linear filtering cannot operate directly on products because the Fo
 Multiplication is successfully transformed into simple addition!
 2D Discrete Fourier Transform:
 where occupies low frequencies and occupies high frequencies.
-Frequency Domain Filtering: Inverse 2D DFT: Exponential Inversion: To compress the illumination dynamic range while amplifying high-frequency reflectance details, the transfer function must satisfy and :
-As : attenuates low frequencies (compresses uneven illumination).
+Frequency Domain Filtering: Inverse 2D DFT: Exponential Inversion: To compress the illumination dynamic range while amplifying high-frequency reflectance details, the transfer function must satisfy and : As : attenuates low frequencies (compresses uneven illumination).
 As : amplifies high frequencies (sharpens texture and contrast).
 : parameter controlling the steepness of the transition slope between and .
 Fail Requires . If an image contains zero-valued pixels, compute with a tiny positive constant to prevent numerical errors.
@@ -164,4 +160,4 @@ Assuming the original image and noise are zero-mean, uncorrelated random process
 : power spectral density of the uncorrupted image.
 In practical applications where the true image and noise power spectra are unknown, the ratio is approximated by a user-tuned scalar constant :Dynamic Frequency Behavior of the Wiener Filter: When Noise is Zero (): At Frequencies Where Signal-to-Noise Ratio is High (): At Frequencies Where Noise Dominates (): The factor acts as a smart, frequency-dependent attenuator that automatically throttles deconvolution whenever the transfer function approaches zero!Fail The direct inverse filter is unusable in real-world noisy environments without radial frequency truncation.
 The parameter represents the noise-to-signal power ratio: setting too small causes high-frequency noise speckled patterns setting too large causes severe blurring.
-Wiener restoration assumes stationary noise and linear degradation it cannot invert non-linear sensor saturation or clipping. ]]></description><link>recap.html</link><guid isPermaLink="false">FACL/4TH-Year-Term-1/DigitalImageProcessing/Recap.md</guid><pubDate>Fri, 13 Nov 2026 05:42:15 GMT</pubDate><enclosure url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlKoDrHCdtWbf1RvvK2OSvkP9KIwThqRXVj_96xxoouw&amp;s=10" length="0" type="false"/><content:encoded>&lt;figure&gt;&lt;img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlKoDrHCdtWbf1RvvK2OSvkP9KIwThqRXVj_96xxoouw&amp;s=10"&gt;&lt;/figure&gt;</content:encoded></item></channel></rss>
+Wiener restoration assumes stationary noise and linear degradation it cannot invert non-linear sensor saturation or clipping. ]]></description><link>recap.html</link><guid isPermaLink="false">FACL/4TH-Year-Term-1/DigitalImageProcessing/Recap.md</guid><pubDate>Fri, 13 Nov 2026 06:30:27 GMT</pubDate><enclosure url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlKoDrHCdtWbf1RvvK2OSvkP9KIwThqRXVj_96xxoouw&amp;s=10" length="0" type="false"/><content:encoded>&lt;figure&gt;&lt;img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlKoDrHCdtWbf1RvvK2OSvkP9KIwThqRXVj_96xxoouw&amp;s=10"&gt;&lt;/figure&gt;</content:encoded></item></channel></rss>
